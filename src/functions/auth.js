@@ -11,8 +11,8 @@ const Authorize = async(req) => {
         let authorization = req.headers.authorization;
         console.log(authorization)
         let userpass = authorization.split(' ')[1];
-        let decodedAuth = ecrypt.decryptor(userpass);
-        let plainText = Buffer.from(decodedAuth, 'base64').toString('ascii');
+        //let decodedAuth = ecrypt.decryptor(userpass);
+        let plainText = Buffer.from(userpass, 'base64').toString('ascii');
 
         // Credentials
         let req_username = plainText.split(':')[0]; // Username filled by user
