@@ -23,7 +23,7 @@ const onLogin = async(req, res) => {
         let response = {
             success: true,
             items: request.rows,
-            message: 'OK'
+            message: 'TodoOK'
         }
 
         res.send(response);
