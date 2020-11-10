@@ -4,7 +4,7 @@ const router = Router();
 
 /* Controllers */
 const { onLogin } = require('../controllers/login.controller');
-const { onCreateUser, onUpdateUser } = require('../controllers/user.controller');
+const { onCreateUser, onUpdateUser, onDeleteUser } = require('../controllers/user.controller');
 
 /* Controllers */
 
@@ -16,6 +16,7 @@ const { onCreateUser, onUpdateUser } = require('../controllers/user.controller')
 router.get('/api/login', onLogin);
 router.post('/api/User', onCreateUser);
 router.put('/api/User', onUpdateUser);
+router.delete('/api/User', onDeleteUser);
 
 
 /* Routes */

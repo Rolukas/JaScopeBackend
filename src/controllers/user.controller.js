@@ -110,13 +110,13 @@ const onDeleteUser = async(req, res)=> {
             response = {
                 success: true,
                 items: [],
-                message: 'user updated succesfully'
+                message: 'user deleted succesfully'
             };
         }else{
             response = {
                 success: false,
                 items: [],
-                message: 'cannot updated user'
+                message: 'cannot deleted user'
             };
         };
         
@@ -133,6 +133,7 @@ const onDeleteUser = async(req, res)=> {
 
 module.exports = {
     onCreateUser,
-    onUpdateUser
+    onUpdateUser,
+    onDeleteUser
 };
 
