@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 var cors = require('cors')
-const routes = require('./routes/index');
+const routes = require('./src/routes/index');
 
 // CORS
 const corsOpts = {
@@ -34,4 +34,5 @@ app.use(routes);
 
 
 app.listen(port);
+//app.listen(process.env.PORT || 5000)
 console.log(`Server on port: ${port}`);

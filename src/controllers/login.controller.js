@@ -4,8 +4,6 @@ const Authorize = require('../functions/auth');
 
 // DB connection
 const pool = require('../database/db_connect');
-const { response } = require("express");
-
 
 const onLogin = async(req, res) => {
 
@@ -41,14 +39,9 @@ const onLogin = async(req, res) => {
             return false;
         }
 
-        console.log("LEL")
-        console.log(request)
-
         // CHECAR USUARIO PERFIL
         var userId = request.rows[0].usuarioid;
         request = await pool.query(`SELECT * FROM UsuarioPerfil WHERE UsuarioId = ${userId}`);
-
-        console.log("LEL2")
 
         if(request.rowCount == 0){
             response = {
@@ -60,17 +53,48 @@ const onLogin = async(req, res) => {
             return false;
         }
 
-        request = await pool.query(`SELECT U.usuarioid, 
-        P.descripcion, U.nombre, M.descripcion FROM usuario as U
+        request = await pool.query(`SELECT U.usuarioid, U.nombre, up.perfilid FROM Usuario AS u
+        JOIN UsuarioPerfil AS up ON up.usuarioid = u.usuarioid
+        JOIN Perfil AS p ON p.perfilid = up.perfilid
+        WHERE u.usuarioid = ${userId}`);
+
+        if(request.rowCount == 0){
+            response = {
+                success: false,
+                items: [],
+                message: 'cannot get user information'
+            }
+            res.send(response);
+            return false;
+        }
+
+        let userInfo = request.rows[0];
+
+        request = await pool.query(`SELECT
+        M.moduloid, M.ruta,
+        M.descripcion FROM usuario as U
         JOIN usuarioperfil as UP on U.usuarioid = UP.usuarioid
         JOIN perfil as P on UP.PerfilId = P.perfilid
         JOIN ModuloPerfil as MP on MP.perfilId = P.perfilId
         JOIN Modulo as M on MP.moduloId = M.moduloId
-        where u.usuario = '${req_username}'`);
+        where u.usuarioid = '${userId}'`);
+
+        if(request.rowCount == 0){
+            response = {
+                success: false,
+                items: [],
+                message: 'cannot get modules'
+            }
+            res.send(response);
+            return false;
+        }
 
         response = {
             success: true,
-            items: request.rows,
+            items: {
+                userInfo,
+                modules: request.rows
+            },
             message: 'login succesfull'
         }
 
