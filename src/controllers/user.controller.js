@@ -7,26 +7,40 @@ const { response, request } = require("express");
 const onCreateUser = async(req, res)=> {
     try{
 
-        //Authorize
-        let auth = await Authorize(req);
-        if(!auth.isAuthorized){
-            res.status(401).send({success: false, message: auth.message });
+        // //Authorize
+        // let auth = await Authorize(req);
+        // if(!auth.isAuthorized){
+        //     res.status(401).send({success: false, message: auth.message });
+        //     return false;
+        // }
+
+        let data = req.body;
+        let response;
+
+        const requestExistentUser = await pool.query(`SELECT usuario FROM Usuario WHERE usuario = '${data.user}'`);
+
+        if(requestExistentUser.rowCount > 0){
+            response = {
+                success: false,
+                items: [],
+                message: 'user already created'
+            };
+
+            res.send(response);
             return false;
         }
 
-        let data = req.body;
-
         const request = await pool.query(
             `INSERT INTO usuario(usuario, password, nombre, telefono, correo, activo)
-            VALUES('${data.user}', '${data.pass}', '${data.name}', '${data.num}', '${data.email}', true)`
+            VALUES('${data.user}', '${data.pass}', '${data.name}', '${data.num}', '${data.email}', true) RETURNING *`
         );
 
-        let response;
+        console.log(request)
 
         if(request.rowCount > 0){
             response = {
                 success: true,
-                items: [],
+                items: request.rows,
                 message: 'user created succesfully'
             };
         }else{
@@ -42,7 +56,7 @@ const onCreateUser = async(req, res)=> {
 
     } catch(error){
         console.log("ERROR")
-        res.status(500).send({success: false, message: error.toString() });
+        res.status(500).send({ success: false, message: error.toString() });
     }
 }
 
