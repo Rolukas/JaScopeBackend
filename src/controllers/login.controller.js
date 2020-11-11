@@ -27,7 +27,40 @@ const onLogin = async(req, res) => {
             return false;
         }
 
-        const request = await pool.query(`SELECT U.usuarioid, 
+        // CHECAR USUARIO ID
+        var response;
+        var request = await pool.query(`SELECT UsuarioId FROM Usuario WHERE usuario = '${req_username}'`);
+
+        if(request.rowCount == 0){
+            response = {
+                success: true,
+                items: request.rows,
+                message: 'no user was found'
+            }
+            res.send(response);
+            return false;
+        }
+
+        console.log("LEL")
+        console.log(request)
+
+        // CHECAR USUARIO PERFIL
+        var userId = request.rows[0].usuarioid;
+        request = await pool.query(`SELECT * FROM UsuarioPerfil WHERE UsuarioId = ${userId}`);
+
+        console.log("LEL2")
+
+        if(request.rowCount == 0){
+            response = {
+                success: true,
+                items: [{ usuarioid: userId }],
+                message: 'user without profile'
+            }
+            res.send(response);
+            return false;
+        }
+
+        request = await pool.query(`SELECT U.usuarioid, 
         P.descripcion, U.nombre, M.descripcion FROM usuario as U
         JOIN usuarioperfil as UP on U.usuarioid = UP.usuarioid
         JOIN perfil as P on UP.PerfilId = P.perfilid
@@ -35,10 +68,10 @@ const onLogin = async(req, res) => {
         JOIN Modulo as M on MP.moduloId = M.moduloId
         where u.usuario = '${req_username}'`);
 
-        let response = {
+        response = {
             success: true,
             items: request.rows,
-            message: 'TodoOK'
+            message: 'login succesfull'
         }
 
         res.send(response);
